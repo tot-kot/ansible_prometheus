@@ -1,0 +1,101 @@
+---
+# tasks file for Prometheus
+- name: "Create prometheus group"
+  ansible.builtin.group:
+    name: "prometheus"
+    system: True
+    state: "present"
+
+- name: "Create prometheus user"
+  ansible.builtin.user:
+    name: "prometheus"
+    system: True
+    shell: "/bin/false"
+    group: "prometheus"
+    comment: "Prometheus server user"
+    createhome: False
+    home: "{{ prom_db_dir }}"
+
+- name: "Create prometheus DB directory"
+  ansible.builtin.file:
+    path: "{{ prom_db_dir }}"
+    state: "directory"
+    owner: "prometheus"
+    group: "prometheus"
+    mode: "0755"
+
+- name: "Create prometheus configuration directory"
+  ansible.builtin.file:
+    path: "{{ prom_config_dir }}"
+    state: "directory"
+    owner: "prometheus"
+    group: "prometheus"
+    mode: "0755"
+
+- name: "Download prometheus archive with binaries"
+  become: False
+  ansible.builtin.get_url:
+    url: "{{ prom_bin_link }}"
+    dest: "/tmp/prometheus.tar.gz"
+    mode: "0644"
+  register: "_download_archive"
+  until: "_download_archive is succeeded"
+  retries: "5"
+  delay: "2"
+  check_mode: False
+
+- name: "Unpack prometheus binaries"
+  become: False
+  ansible.builtin.unarchive:
+    remote_src: True
+    src: "/tmp/prometheus.tar.gz"
+    dest: "/tmp"
+    creates: "/tmp/prometheus"
+    extra_opts:
+      - "--strip-components=1"
+  check_mode: False
+
+- name: "Copy prometheus and promtool binaries"
+  ansible.builtin.copy:
+    remote_src: True
+    src: "/tmp/{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    mode: "0755"
+    owner: "root"
+    group: "root"
+  with_items:
+    - "prometheus"
+    - "promtool"
+  notify:
+    - "restart prometheus"
+
+- name: "Create prometheus config"
+  ansible.builtin.template:
+    src: "prometheus.config.j2"
+    dest: "{{ prom_config_dir }}/prometheus.yml"
+    mode: "0664"
+    owner: "prometheus"
+    group: "prometheus"
+    validate: "/usr/local/bin/promtool check config %s"
+  notify:
+    - "reload prometheus"
+
+- name: "Create options for service"
+  ansible.builtin.template:
+    src: "sysconfig.prometheus.j2"
+    dest: "/etc/sysconfig/prometheus"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify:
+    - "restart prometheus"
+
+- name: "Create systemd service"
+  ansible.builtin.template:
+    src: "prometheus.service.j2"
+    dest: "/etc/systemd/system/prometheus.service"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify:
+    - "restart prometheus"

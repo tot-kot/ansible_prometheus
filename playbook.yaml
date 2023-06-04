@@ -1,0 +1,20 @@
+---
+- hosts: "prometheus"
+  become: True
+  roles:
+    - "Prometheus"
+
+- hosts: "node_exporter"
+  roles:
+    - "node_exporter"
+
+- hosts: "elasticsearch_kibana"
+  become: True
+  roles:
+    - "elastic_kibana"
+
+- hosts: "fluentbit"
+  roles:
+    - "fluentbit"
+
+...

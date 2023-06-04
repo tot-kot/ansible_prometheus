@@ -1,0 +1,16 @@
+---
+# handlers file for Prometheus
+- name: "Restart prometheus"
+  listen: "restart prometheus"
+  become: True
+  ansible.builtin.systemd:
+    daemon_reload: True
+    name: "prometheus"
+    state: "restarted"
+
+- name: "Reload prometheus"
+  listen: "reload prometheus"
+  become: True
+  ansible.builtin.systemd:
+    name: "prometheus"
+    state: "reloaded"

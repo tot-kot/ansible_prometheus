@@ -1,0 +1,45 @@
+---
+# defaults file for Prometheus
+##############################
+# Переменные для инсталляции #
+##############################
+
+# Каталог БД
+prom_db_dir: "/var/lib/prometheus"
+
+# Каталог конфигурационных файлов
+prom_config_dir: "/etc/prometheus"
+
+# Ссылка для скачивания архива с бинарником Prometheus. https://github.com/prometheus/prometheus/releases
+prom_bin_link: "https://github.com/prometheus/prometheus/releases/download/v2.44.0/prometheus-2.44.0.linux-amd64.tar.gz"
+
+##################################
+# Переменные при запуске сервиса #
+##################################
+# При изменении произведет RESTART
+
+# Время хранения метрик. Default: "15d"
+prom_storage_retention_time: "3d"
+
+# Размер БД. Значения в KB, MB, GB, TB, PB. Default: "0" - unlimited
+prom_storage_db_size: "100MB"
+
+# Адрес который будет слушать WEB UI Prometheus. Default: "0.0.0.0:9090"
+prom_web_address: "0.0.0.0:9090"
+
+# URL по которому будет доступен WEB UI Prometheus.
+prom_web_url: ""
+
+######################################
+# Переменные конфигурационного файла #
+######################################
+# При изменении произведет RELOAD
+
+# Как часто prometheus будет опрашивать источники данных. Default: "1m"
+prom_scrape_interval: "15s"
+
+# Таймаут сбора данных. Default: "10s"
+prom_scrape_timeout: "10s"
+
+# Как часто перечитывается список правил. Default: "1m"
+prom_evaluation_interval: "1m"

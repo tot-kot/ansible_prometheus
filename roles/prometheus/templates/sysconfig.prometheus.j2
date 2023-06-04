@@ -1,0 +1,2 @@
+OPTIONS="--config.file={{ prom_config_dir }}/prometheus.yml --storage.tsdb.path={{ prom_db_dir }}/ --storage.tsdb.retention.time={{ prom_storage_retention_time }} --web.listen-address={{ prom_web_address }} --web.external-url={{ prom_web_url }} --storage.tsdb.retention.size={{ prom_storage_db_size }}"
+{{ ansible_managed | comment }}
