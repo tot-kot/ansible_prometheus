@@ -1,0 +1,60 @@
+---
+# tasks file for Node Exporter
+
+- name: "Create node_exporter config directory"
+  ansible.builtin.file:
+    path: "{{ node_exporter_config_dir }}"
+    state: "directory"
+    owner: "root"
+    group: "root"
+    mode: "0775"
+
+- name: "Download node_exporter archive with binary"
+  become: False
+  ansible.builtin.get_url:
+    url: "{{ node_exporter_bin_link }}"
+    dest: "/tmp/node_exporter.tar.gz"
+    mode: "0644"
+  register: "_download_archive"
+  until: "_download_archive is succeeded"
+  retries: "5"
+  delay: "2"
+  check_mode: False
+
+- name: "Unpack node_exporter binary"
+  become: False
+  ansible.builtin.unarchive:
+    remote_src: True
+    src: "/tmp/node_exporter.tar.gz"
+    dest: "/tmp"
+    creates: "/tmp/node_exporter"
+    extra_opts: "--strip-components=1"
+  check_mode: False
+
+- name: "Copy node_exporter binary"
+  ansible.builtin.copy:
+    remote_src: True
+    src: "/tmp/node_exporter"
+    dest: "/usr/local/bin/node_exporter"
+    mode: "0755"
+    owner: "root"
+    group: "root"
+  notify: "restart node_exporter"
+
+- name: "Create options for service"
+  ansible.builtin.template:
+    src: "sysconfig.node_exporter.j2"
+    dest: "/etc/sysconfig/node_exporter"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: "restart node_exporter"
+
+- name: "Create systemd service"
+  ansible.builtin.template:
+    src: "node_exporter.service.j2"
+    dest: "/etc/systemd/system/node_exporter.service"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: "restart node_exporter"

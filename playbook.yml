@@ -2,9 +2,10 @@
 - hosts: "prometheus"
   become: True
   roles:
-    - "Prometheus"
+    - "prometheus"
 
 - hosts: "node_exporter"
+  become: True
   roles:
     - "node_exporter"
 
@@ -16,5 +17,4 @@
 - hosts: "fluentbit"
   roles:
     - "fluentbit"
-
 ...

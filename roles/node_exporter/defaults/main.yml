@@ -1,0 +1,8 @@
+---
+# defaults file for Node Exporter
+
+# Ссылка для скачивания архива с бинарником Node Exporter. https://github.com/prometheus/node_exporter/releases
+node_exporter_bin_link: "https://github.com/prometheus/node_exporter/releases/download/v1.5.0/node_exporter-1.5.0.linux-amd64.tar.gz"
+
+# Каталог для collector.textfile.directory
+node_exporter_config_dir: "/etc/node_exporter"

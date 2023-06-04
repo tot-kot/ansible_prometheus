@@ -6,13 +6,15 @@
 * FluentBit
 
 #### Перед установкой:
-1. Поправить `./inventory.yaml`  
+1. Поправить `./inventory.yml`  
 Разбит на 4 группы хостов, для распределения ролей на различные сервера/клиенты.  
+Примечание: Node Exporters из inventory.yml добавляются в static_config prometheus  
 Можно затолкать всё на один, такое задание ¯\＿(ツ)＿/¯
-2. Проверить переменные настроек в `./roles/<role>/defaults/main.yml`  
+2. Убедиться в доступности хостов и ssh ключей на них от имени пользователя с которого будет запущен playbook.
+3. Проверить переменные настроек в `./roles/<role>/defaults/main.yml`  
 Там же найдете подробное описание.
 
 #### Установка:
 ```
-ansible-playbook playbook.yaml
+ansible-playbook playbook.yml
 ```
