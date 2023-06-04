@@ -1,0 +1,61 @@
+---
+# tasks file for ElasticSearch & Kibana
+
+- name: "Install Java"
+  ansible.builtin.yum:
+    name:  "java-1.8.0-openjdk-devel"
+    state: "present"
+
+- name: "Grab public signing key"
+  ansible.builtin.rpm_key:
+    state: "present"
+    key: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+
+- name: "Add Elastic SW yum repo"
+  ansible.builtin.yum_repository:
+    name: "Elastic_8.X_repo"
+    baseurl: "https://artifacts.elastic.co/packages/8.x/yum"
+    gpgcheck: True
+    gpgkey: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+    description: "Elastic 8.X Repo"
+
+- name: "Install ElasticSearch and Kibana"
+  ansible.builtin.yum:
+    name:
+      - "elasticsearch"
+      - "kibana"
+    update_cache: True
+
+- name: "Configure listening IP and port"
+  ansible.builtin.lineinfile:
+    path: "/etc/elasticsearch/elasticsearch.yml"
+    state: "present"
+    create: True
+    mode: "0644"
+    owner: "root"
+    group: "elasticsearch"
+    line: '{{ item }}'
+  loop:
+    - 'network.host: "{{ server_ip }}"'
+    - 'http.port: {{ elastic_port }}'
+    - 'cluster.initial_master_nodes: {{ server_ip }}'
+
+- name: "Configure Kibana host/port"
+  ansible.builtin.lineinfile:
+    path: "/etc/kibana/kibana.yml"
+    state: "present"
+    create: True
+    mode: "0644"
+    owner: "root"
+    group: "root"
+    line: '{{ item }}'
+  loop:
+    - 'server.host: "{{ server_ip }}"'
+    - 'server.port: {{ kibana_port }}'
+
+- name: "Configure Kibana Elastic URL"
+  ansible.builtin.lineinfile:
+    path: "/etc/kibana/kibana.yml"
+    state: "present"
+    line: 'elasticsearch.hosts: ["http://{{ server_ip }}:{{ elastic_port }}"]'
+  notify: "EFK reload"

@@ -1,0 +1,24 @@
+---
+# tasks file for FluentBit
+- name: "Add yum repository"
+  ansible.builtin.yum_repository:
+    name: "TD_Agent_Bit"
+    baseurl: "http://packages.fluentbit.io/centos/7/$basearch/"
+    gpgcheck: True
+    gpgkey: "http://packages.fluentbit.io/fluentbit.key"
+    description: "Fluent bit repo"
+    enabled: True
+
+- name: "Install fluentbit package"
+  ansible.builtin.package:
+    name: "td-agent-bit"
+    state: "present"
+    update_cache: True
+  notify: "Restart Fluentbit service"
+
+- name: "Source td-agent-bit main conf"
+  ansible.builtin.template:
+    src: "td-agent-bit.conf.j2"
+    dest: "/etc/td-agent-bit/td-agent-bit.conf"
+    mode: "0644"
+  notify: "Restart Fluentbit service"

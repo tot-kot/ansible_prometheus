@@ -15,6 +15,7 @@
     - "elastic_kibana"
 
 - hosts: "fluentbit"
+  become: True
   roles:
     - "fluentbit"
 ...
