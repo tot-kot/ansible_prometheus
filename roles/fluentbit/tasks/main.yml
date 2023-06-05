@@ -1,6 +1,6 @@
 ---
 # tasks file for FluentBit
-- name: "Add yum repository"
+- name: "Add FluentBit repository to yum"
   ansible.builtin.yum_repository:
     name: "TD_Agent_Bit"
     baseurl: "http://packages.fluentbit.io/centos/7/$basearch/"
@@ -9,7 +9,7 @@
     description: "Fluent bit repo"
     enabled: True
 
-- name: "Install fluentbit package"
+- name: "Install FluentBit package"
   ansible.builtin.package:
     name: "td-agent-bit"
     state: "present"
@@ -21,4 +21,4 @@
     src: "td-agent-bit.conf.j2"
     dest: "/etc/td-agent-bit/td-agent-bit.conf"
     mode: "0644"
-  notify: "Restart Fluentbit service"
+  notify: "fb_restart"

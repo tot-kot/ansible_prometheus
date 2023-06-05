@@ -1,7 +1,8 @@
 ---
 # handlers file for FluentBit
 
-- name: "Restart Fluentbit service"
+- name: "Restart FluentBit service"
+  listen: "fb_restart"
   systemd:
     name: "td-agent-bit"
     state: "reloaded"

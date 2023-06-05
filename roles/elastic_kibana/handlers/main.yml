@@ -1,7 +1,7 @@
 ---
 # handlers file for ElasticSearch & Kibana
 - name: "ElasticSearch & Kibana reload"
-  listen: "EFK reload"
+  listen: "ek_restart"
   systemd:
     name: "{{ item }}"
     state: "restarted"

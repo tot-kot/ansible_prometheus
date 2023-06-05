@@ -36,9 +36,9 @@
     group: "elasticsearch"
     line: '{{ item }}'
   loop:
-    - 'network.host: "{{ server_ip }}"'
+    - 'network.host: "{{ ek_server_ip }}"'
     - 'http.port: {{ elastic_port }}'
-    - 'cluster.initial_master_nodes: {{ server_ip }}'
+    - 'cluster.initial_master_nodes: {{ ek_server_ip }}'
 
 - name: "Configure Kibana host/port"
   ansible.builtin.lineinfile:
@@ -50,12 +50,12 @@
     group: "root"
     line: '{{ item }}'
   loop:
-    - 'server.host: "{{ server_ip }}"'
+    - 'server.host: "{{ ek_server_ip }}"'
     - 'server.port: {{ kibana_port }}'
 
 - name: "Configure Kibana Elastic URL"
   ansible.builtin.lineinfile:
     path: "/etc/kibana/kibana.yml"
     state: "present"
-    line: 'elasticsearch.hosts: ["http://{{ server_ip }}:{{ elastic_port }}"]'
-  notify: "EFK reload"
+    line: 'elasticsearch.hosts: ["http://{{ ek_server_ip }}:{{ elastic_port }}"]'
+  notify: "ek_restart"
